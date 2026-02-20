@@ -1,0 +1,44 @@
+{
+    "029936769": {
+        "accountNumber": "029936769",
+        "name": "Elliot Alderson",
+        "address": "217 E Broadway, New York, NY 10002",
+        "creationDate": "2026-02-20T13:51:31.521495",
+        "balance": 525862,
+        "transactions": [
+            {
+                "type": "deposit",
+                "amount": 525862,
+                "date": "2026-02-20T14:11:03.785159"
+            }
+        ]
+    },
+    "566037688": {
+        "accountNumber": "566037688",
+        "name": "Jean-Luc Picard",
+        "address": "Chateau Picard, France, Earth",
+        "creationDate": "2026-02-20T13:52:02.683063",
+        "balance": 6984421557,
+        "transactions": [
+            {
+                "type": "deposit",
+                "amount": 6984421557,
+                "date": "2026-02-20T14:11:03.785159"
+            }
+        ]
+    },
+    "311423721": {
+        "accountNumber": "311423721",
+        "name": "Homeless Joe",
+        "address": "Finest City Ally",
+        "creationDate": "2026-02-20T14:11:48.569472",
+        "balance": 100,
+        "transactions": [
+            {
+                "type": "deposit",
+                "amount": 100,
+                "date": "2026-02-20T14:11:48.569472"
+            }
+        ]
+    }
+}
