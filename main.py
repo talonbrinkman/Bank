@@ -3,6 +3,7 @@ import random
 import os
 import json
 import datetime
+from decimal import Decimal, InvalidOperation
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 ACCOUNTS_FILE = os.path.join(BASE_DIR, "accounts.json")
@@ -16,11 +17,11 @@ def getPositiveAmount(prompt):
         if userInput.lower() == "cancel":
             return None
         try:
-            amount = int(userInput)
+            amount = Decimal(userInput)
             if amount > 0:
                 return amount
             print("Amount must be greater than 0")
-        except ValueError:
+        except (ValueError, InvalidOperation):
             print("Please enter a valid number")
         
 def getValidAccountNumber(prompt="Enter Account Number or type 'cancel': "):
@@ -49,13 +50,21 @@ def loadAccounts(filename=ACCOUNTS_FILE):
         accounts = {}
         for k, v in data.items():
             v["creationDate"] = datetime.datetime.fromisoformat(v["creationDate"])
+            v["balance"] = Decimal(v["balance"])
             accounts[k] = Account(**v)
         return accounts
 
 def saveAccounts(accounts, filename=ACCOUNTS_FILE):
     with open(filename, "w") as f:
         json.dump(
-            {k: {**v.__dict__, "creationDate": v.creationDate.isoformat()} for k, v in accounts.items()},
+            {
+                k: {
+                    **v.__dict__,
+                    "balance": str(v.balance),
+                    "creationDate": v.creationDate.isoformat()
+                }
+                for k, v in accounts.items()
+            },
             f,
             indent=4
         )

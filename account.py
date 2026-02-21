@@ -1,14 +1,15 @@
 import datetime
+from decimal import Decimal, InvalidOperation
 
 class Account:
-    def __init__(self, accountNumber, name, address, creationDate, balance=0, transactions=None):
+    def __init__(self, accountNumber, name, address, creationDate, balance=Decimal("0.00"), transactions=[]):
         self.accountNumber = accountNumber
         self.name = name
         self.address = address
         self.creationDate = creationDate
-        self.balance = 0
-        self.transactions = []
-        self.deposit(balance)
+        self.balance = Decimal("0.00")
+        self.transactions = transactions
+        self.deposit(Decimal(str(balance)))
 
     def deposit(self, amount):
         if amount <= 0:
@@ -19,7 +20,7 @@ class Account:
         now = datetime.datetime.now().isoformat()
         self.transactions.append({
             "type": "deposit",
-            "amount": amount,
+            "amount": str(amount),
             "date": now
         })
 
@@ -36,7 +37,7 @@ class Account:
         now = datetime.datetime.now().isoformat()
         self.transactions.append({
             "type": "withdrawal",
-            "amount": amount,
+            "amount": str(amount),
             "date": now
         })
 
@@ -57,14 +58,14 @@ class Account:
 
         self.transactions.append({
             "type": "transferSend",
-            "amount": amount,
+            "amount": str(amount),
             "to": transfereeAccount.accountNumber,
             "date": now
         })
 
         transfereeAccount.transactions.append({
             "type": "transferReceive",
-            "amount": amount,
+            "amount": str(amount),
             "from": self.accountNumber,
             "date": now
         })
