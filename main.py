@@ -2,7 +2,7 @@ from account import Account
 import random
 import os
 import json
-import datetime
+from datetime import datetime
 from decimal import Decimal, InvalidOperation
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -49,7 +49,7 @@ def loadAccounts(filename=ACCOUNTS_FILE):
         data = json.load(f)
         accounts = {}
         for k, v in data.items():
-            v["creationDate"] = datetime.datetime.fromisoformat(v["creationDate"])
+            v["creationDate"] = datetime.fromisoformat(v["creationDate"])
             v["balance"] = Decimal(v["balance"])
             accounts[k] = Account(**v)
         return accounts
@@ -96,8 +96,8 @@ while True:
             
             while True:
                 os.system('cls' if os.name == 'nt' else 'clear')
-                print(f"#[{accountNumber}] - {lookedUpAccount.name} - ${lookedUpAccount.balance:,.2f}")
-                userInput = input("[1] Deposit Funds\n[2] Withdraw Funds\n[3] Transfer Funds\n[4] Close Account\n[5] Exit Account\n> ")
+                print(f"[#{accountNumber} - {lookedUpAccount.name} - ${lookedUpAccount.balance:,.2f}]")
+                userInput = input("[1] Deposit Funds\n[2] Withdraw Funds\n[3] Transfer Funds\n[4] View Transactions\n[5] Close Account\n[6] Exit Account\n> ")
                 match userInput:
                     case "1":
                         amount = getPositiveAmount("Enter Deposit Amount: $")
@@ -140,6 +140,32 @@ while True:
                             else:
                                 input(f"Transfer of ${amount:,.2f} failed. Please check your balance and try again.")
                     case "4":
+                        lookedUpAccountTransactions = lookedUpAccount.transactions
+
+                        if not lookedUpAccountTransactions is None:
+                            os.system('cls' if os.name == 'nt' else 'clear')
+                            for i, transaction in enumerate(lookedUpAccountTransactions, start=1):
+                                try:
+                                    transactionType = transaction["type"]
+                                    date = datetime.fromisoformat(transaction['date'])
+                                    formattedDate = f"{date.month}/{date.day}/{date.year} {date.hour}:{date.minute:02d}"
+                                    transactionAmount = f"{float(transaction['amount']):,.2f}"
+
+                                    if transactionType == "transferSend":
+                                        print(f"{i}) [{formattedDate}] - Transfer Send - (${transactionAmount} to #{transaction['to']})")
+                                    elif transactionType == "transferReceive":
+                                        print(f"{i}) [{formattedDate}] - Transfer Receive - (${transactionAmount} from #{transaction['from']})")
+                                    else:
+                                        print(f"{i}) [{formattedDate}] - {transactionType.capitalize()} - (${transactionAmount})")
+
+                                except KeyError as e:
+                                    print(f"{i}) [ERROR] {e}")
+                                except ValueError as e:
+                                    print(f"{i}) [ERROR] {e}")
+                            input("Press any key to continue...")
+                        else:
+                            input("Could not find any transaction history...")
+                    case "5":
                         if not confirmAction("Are you sure you want to close your account (Y/N)? "):
                             continue
                         
@@ -160,7 +186,7 @@ while True:
 
                         input("Press any key to continue...")
                         break
-                    case "5":
+                    case "6":
                         break
         case "3":
             saveAccounts(accounts)

@@ -12,7 +12,6 @@ class Account:
 
         balance = Decimal(str(balance))
         if balance > 0 and self.balance == 0:
-            input("Depositing...")
             self.deposit(balance)
         else:
             self.balance = balance
