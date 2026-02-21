@@ -4,6 +4,8 @@ import os
 import json
 from datetime import datetime
 from decimal import Decimal, InvalidOperation
+import base64
+import hashlib
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 ACCOUNTS_FILE = os.path.join(BASE_DIR, "accounts.json")
@@ -24,7 +26,7 @@ def getPositiveAmount(prompt):
         except (ValueError, InvalidOperation):
             print("Please enter a valid number")
         
-def getValidAccountNumber(prompt="Enter Account Number or type 'cancel': "):
+def getValidAccountNumber(prompt="Enter Account Number or type 'cancel': #"):
     while True:
         userInput = input(prompt)
         if userInput.lower() == "cancel":
@@ -40,6 +42,31 @@ def confirmAction(prompt):
         return True
     else:
         return False
+
+def hashPassword(password, salt=None):
+    if salt is None:
+        salt = os.urandom(16)
+
+    if isinstance(salt, str):
+        salt = base64.b64decode(salt.encode())
+
+    passwordHash = hashlib.sha256(salt + password.encode()).hexdigest()
+
+    return base64.b64encode(salt).decode(), passwordHash
+
+def authenticate(account):
+    for _ in range(5):
+        enteredPassword = input("Enter Account Password: ")
+
+        salt = account.salt
+        _, testHash = hashPassword(enteredPassword, salt)
+
+        if testHash == account.passwordHash:
+            return True
+
+        print("Incorrect password")
+
+    return False
 
 def loadAccounts(filename=ACCOUNTS_FILE):
     if not os.path.exists(filename) or os.path.getsize(filename) == 0:
@@ -59,9 +86,14 @@ def saveAccounts(accounts, filename=ACCOUNTS_FILE):
         json.dump(
             {
                 k: {
-                    **v.__dict__,
+                    "accountNumber": v.accountNumber,
+                    "passwordHash": v.passwordHash,
+                    "salt": v.salt,
+                    "name": v.name,
+                    "address": v.address,
+                    "creationDate": v.creationDate.isoformat(),
                     "balance": str(v.balance),
-                    "creationDate": v.creationDate.isoformat()
+                    "transactions": v.transactions
                 }
                 for k, v in accounts.items()
             },
@@ -76,15 +108,17 @@ while True:
     userInput = input("[1] Open Account\n[2] Enter Account\n[3] Quit\n> ")
     match userInput:
         case "1":
+            name = str(input("Enter Account Holder Name: "))
+            rawPassword = input("Create Account Password: ")
+            salt, passwordHash = hashPassword(rawPassword)
+            address = str(input("Enter Account Holder Address: "))
+            deposit = getPositiveAmount("Enter Initial Deposit Amount: $")
             while True:
                 accountNumber = generateAccountNumber()
                 if accountNumber not in accounts:
                     break
-            name = input("Enter Account Holder Name: ")
-            address = input("Enter Account Holder Address: ")
-            deposit = getPositiveAmount("Enter Initial Deposit Amount: $")
 
-            accounts[accountNumber] = Account(accountNumber, name, address, datetime.datetime.now(), deposit)
+            accounts[accountNumber] = Account(accountNumber, name, passwordHash, salt, address, datetime.now(), deposit)
             saveAccounts(accounts)
             print(f"Account #{accountNumber} Created")
             input("Press any key to continue...")
@@ -92,7 +126,12 @@ while True:
             accountNumber = getValidAccountNumber()
             if accountNumber is None:
                 continue
+
             lookedUpAccount = accounts.get(accountNumber)
+
+            if not authenticate(lookedUpAccount):
+                input("Login failed. Press any key to continue...")
+                continue
             
             while True:
                 os.system('cls' if os.name == 'nt' else 'clear')

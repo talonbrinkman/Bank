@@ -2,19 +2,18 @@ import datetime
 from decimal import Decimal, InvalidOperation
 
 class Account:
-    def __init__(self, accountNumber, name, address, creationDate, balance=Decimal("0.00"), transactions=None):
+    def __init__(self, accountNumber, name, passwordHash=None, salt=None, address=None, creationDate=None, balance=Decimal("0.00"), transactions=None):
         self.accountNumber = accountNumber
+        self.passwordHash = passwordHash
+        self.salt = salt
         self.name = name
         self.address = address
         self.creationDate = creationDate
-        self.balance = Decimal("0.00")
+        self.balance = Decimal(str(balance))
         self.transactions = transactions if transactions is not None else []
 
-        balance = Decimal(str(balance))
-        if balance > 0 and self.balance == 0:
-            self.deposit(balance)
-        else:
-            self.balance = balance
+        if not self.transactions and self.balance > 0:
+            self.deposit(self.balance)
 
     def deposit(self, amount):
         if amount <= 0:
