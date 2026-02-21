@@ -129,17 +129,16 @@ while True:
 
                         amount = getPositiveAmount(f"Enter amount to transfer to [Account #{transfereeAccount.accountNumber} - {transfereeAccount.name}]: $")
 
-                        if not confirmAction(f"Are you sure you want to transfer ${amount:,.2f} to [Account #{transfereeAccount.accountNumber} - {transfereeAccount.name}] (Y/N)? "):
+                        if not confirmAction(f"Are you sure you want to transfer ${amount:,.2f} [#{accountNumber} - {lookedUpAccount.name}] --> [#{transfereeAccount.accountNumber} - {transfereeAccount.name}] (Y/N)? "):
                             continue
 
                         if amount is not None:
                             if lookedUpAccount.transfer(transfereeAccount, amount):
                                 saveAccounts(accounts)
-                                print(f"Transferred ${amount} to [Account #{transfereeAccountNumber} - {transfereeAccount.name}]")
+                                print(f"Transferred ${amount:,.2f} [#{accountNumber} - {lookedUpAccount.name}] --> [#{transfereeAccount.accountNumber} - {transfereeAccount.name}]")
                                 input("Press any key to continue...")
                             else:
-                                print(f"Transfer of ${amount} failed. Please check your balance and try again.")
-                            input("Press any key to continue...")
+                                input(f"Transfer of ${amount:,.2f} failed. Please check your balance and try again.")
                     case "4":
                         if not confirmAction("Are you sure you want to close your account (Y/N)? "):
                             continue
@@ -149,7 +148,7 @@ while True:
                         try:
                             if lookedUpAccount.withdraw(lookedUpAccount.balance):
                                 saveAccounts(accounts)
-                                print(f"Withdrew ${lookedUpAccount.balance} from [Account #{accountNumber} - {lookedUpAccount.name}]")
+                                print(f"Withdrew ${lookedUpAccount.balance:,.2f} from [Account #{accountNumber} - {lookedUpAccount.name}]")
                                 input("Press any key to continue...")
                         except ValueError as e:
                             print(f"[ERROR] {e}")
