@@ -6,7 +6,7 @@
         "name": "Elliot Alderson",
         "address": "217 E Broadway, New York, NY 10002",
         "creationDate": "2026-02-21T12:36:06.912713",
-        "balance": "2000000",
+        "balance": "1000000",
         "transactions": [
             {
                 "type": "deposit",
@@ -22,7 +22,7 @@
         "name": "Jean-Luc Picard",
         "address": "Chateau Picard, France, Earth",
         "creationDate": "2026-02-21T12:37:16.116058",
-        "balance": "177508320540",
+        "balance": "88754160270",
         "transactions": [
             {
                 "type": "deposit",
@@ -38,12 +38,38 @@
         "name": "Homeless Joe",
         "address": "The Finest City Ally",
         "creationDate": "2026-02-21T12:38:12.830941",
-        "balance": "28",
+        "balance": "14",
         "transactions": [
             {
                 "type": "deposit",
                 "amount": "14",
                 "date": "2026-02-21T12:38:12.830941"
+            }
+        ]
+    },
+    "741454999": {
+        "accountNumber": "741454999",
+        "passwordHash": "8e1e0168bee1238e14404d35697f3f6519ccec41a5005bdbb20deb8bc7f36369",
+        "salt": "Z84LjxRHvd15IrwFmEdQtA==",
+        "name": "Lester Crest",
+        "address": "Darnell Bros., La Mesa, Los Santos",
+        "creationDate": "2026-02-22T14:12:54.732686",
+        "balance": "420000000.00",
+        "transactions": [
+            {
+                "type": "deposit",
+                "amount": "420000000",
+                "date": "2026-02-22T14:12:54.743412"
+            },
+            {
+                "type": "withdrawal",
+                "amount": "500",
+                "date": "2026-02-22T14:13:28.781552"
+            },
+            {
+                "type": "deposit",
+                "amount": "500",
+                "date": "2026-02-22T14:13:51.213266"
             }
         ]
     }

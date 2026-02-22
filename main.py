@@ -118,7 +118,9 @@ while True:
                 if accountNumber not in accounts:
                     break
 
-            accounts[accountNumber] = Account(accountNumber, name, passwordHash, salt, address, datetime.now(), deposit)
+            accounts[accountNumber] = Account(accountNumber, name, passwordHash, salt, address, datetime.now(), Decimal("0.00"))
+            if deposit:
+                accounts[accountNumber].deposit(deposit)
             saveAccounts(accounts)
             print(f"Account #{accountNumber} Created")
             input("Press any key to continue...")

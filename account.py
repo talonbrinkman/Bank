@@ -12,9 +12,6 @@ class Account:
         self.balance = Decimal(str(balance))
         self.transactions = transactions if transactions is not None else []
 
-        if not self.transactions and self.balance > 0:
-            self.deposit(self.balance)
-
     def deposit(self, amount):
         if amount <= 0:
             raise ValueError("Deposit amount must be positive")
