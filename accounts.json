@@ -38,12 +38,18 @@
         "name": "Homeless Joe",
         "address": "The Finest City Ally",
         "creationDate": "2026-02-21T12:38:12.830941",
-        "balance": "14",
+        "balance": "1262.69",
         "transactions": [
             {
                 "type": "deposit",
                 "amount": "14",
                 "date": "2026-02-21T12:38:12.830941"
+            },
+            {
+                "type": "transferReceive",
+                "amount": "1248.69",
+                "from": "741454999",
+                "date": "2026-02-23T16:12:58.049224+00:00"
             }
         ]
     },
@@ -54,7 +60,7 @@
         "name": "Lester Crest",
         "address": "Darnell Bros., La Mesa, Los Santos",
         "creationDate": "2026-02-22T14:12:54.732686",
-        "balance": "420000000.00",
+        "balance": "468998751.31",
         "transactions": [
             {
                 "type": "deposit",
@@ -70,6 +76,43 @@
                 "type": "deposit",
                 "amount": "500",
                 "date": "2026-02-22T14:13:51.213266"
+            },
+            {
+                "type": "deposit",
+                "amount": "69000000",
+                "date": "2026-02-23T16:11:47.185100+00:00"
+            },
+            {
+                "type": "withdrawal",
+                "amount": "20000000",
+                "date": "2026-02-23T16:11:55.721711+00:00"
+            },
+            {
+                "type": "transferSend",
+                "amount": "1248.69",
+                "to": "417026795",
+                "date": "2026-02-23T16:12:58.049224+00:00"
+            }
+        ]
+    },
+    "030421789": {
+        "accountNumber": "030421789",
+        "passwordHash": "0ae48d1735ad36e28898715aed336e422b65b1aa2bf4085a8cb427d1c02ad2c3",
+        "salt": "S1dhqpf0IioceMM+JI2D3g==",
+        "name": "Rick Sanchez",
+        "address": "",
+        "creationDate": "2026-02-23T16:15:01.838030+00:00",
+        "balance": "55125795631258918.95",
+        "transactions": [
+            {
+                "type": "deposit",
+                "amount": "55125795631259054",
+                "date": "2026-02-23T16:15:01.838030+00:00"
+            },
+            {
+                "type": "withdrawal",
+                "amount": "135.05",
+                "date": "2026-02-23T16:15:54.088397+00:00"
             }
         ]
     }

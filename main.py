@@ -2,7 +2,7 @@ from account import Account
 import random
 import os
 import json
-from datetime import datetime
+from datetime import datetime, timezone
 from decimal import Decimal, InvalidOperation
 import base64
 import hashlib
@@ -34,7 +34,7 @@ def getValidAccountNumber(prompt="Enter Account Number or type 'cancel': #"):
         lookedUpAccount = accounts.get(userInput)
         if lookedUpAccount:
             return userInput
-        print("Account not found. Please try again or type 'cancel'.")
+        input("Account not found. Please try again or type 'cancel'...")
 
 def confirmAction(prompt):
     userInput = input(prompt)
@@ -64,7 +64,7 @@ def authenticate(account):
         if testHash == account.passwordHash:
             return True
 
-        print("Incorrect password")
+        input("Incorrect password. Please try again...")
 
     return False
 
@@ -118,9 +118,13 @@ while True:
                 if accountNumber not in accounts:
                     break
 
-            accounts[accountNumber] = Account(accountNumber, name, passwordHash, salt, address, datetime.now(), Decimal("0.00"))
+            accounts[accountNumber] = Account(accountNumber, name, passwordHash, salt, address, datetime.now(timezone.utc), Decimal("0.00"))
             if deposit:
-                accounts[accountNumber].deposit(deposit)
+                try:
+                    accounts[accountNumber].deposit(deposit)
+                    saveAccounts(accounts)
+                except ValueError as e:
+                    input(f"[ERROR] Deposit failed: {e}. Press any key to continue...")
             saveAccounts(accounts)
             print(f"Account #{accountNumber} Created")
             input("Press any key to continue...")
@@ -144,24 +148,20 @@ while True:
                         amount = getPositiveAmount("Enter Deposit Amount: $")
                         if amount is not None:
                             try:
-                                if lookedUpAccount.deposit(amount):
-                                    saveAccounts(accounts)
-                                    print(f"Deposited ${amount} to [Account #{accountNumber} - {lookedUpAccount.name}]")
-                                    input("Press any key to continue...")
+                                lookedUpAccount.deposit(amount)
+                                saveAccounts(accounts)
+                                input(f"Deposited ${amount:,.2f} to [Account #{accountNumber} - {lookedUpAccount.name}]\nPress any key to continue...")
                             except ValueError as e:
-                                print(f"[ERROR] {e}")
-                                input("Press any key to continue...")
+                                input(f"[ERROR] Deposit failed: {e}. Press any key to continue...")
                     case "2":
                         amount = getPositiveAmount("Enter Withdrawal Amount: $")
                         if amount is not None:
                             try:
-                                if lookedUpAccount.withdraw(amount):
-                                    saveAccounts(accounts)
-                                    print(f"Withdrew ${amount} from [Account #{accountNumber} - {lookedUpAccount.name}]")
-                                    input("Press any key to continue...")
+                                lookedUpAccount.withdraw(amount)
+                                saveAccounts(accounts)
+                                input(f"Withdrew ${amount:,.2f} from [Account #{accountNumber} - {lookedUpAccount.name}]\nPress any key to continue...")
                             except ValueError as e:
-                                print(f"[ERROR] {e}")
-                                input("Press any key to continue...")
+                                input(f"[ERROR] Withdrawal failed: {e}. Press any key to continue...")
                     case "3":
                         transfereeAccountNumber = getValidAccountNumber("Enter Account Number of Transferee or type 'cancel': ")
                         if transfereeAccountNumber is None:
@@ -170,16 +170,15 @@ while True:
 
                         amount = getPositiveAmount(f"Enter amount to transfer to [Account #{transfereeAccount.accountNumber} - {transfereeAccount.name}]: $")
 
-                        if not confirmAction(f"Are you sure you want to transfer ${amount:,.2f} [#{accountNumber} - {lookedUpAccount.name}] --> [#{transfereeAccount.accountNumber} - {transfereeAccount.name}] (Y/N)? "):
-                            continue
-
                         if amount is not None:
-                            if lookedUpAccount.transfer(transfereeAccount, amount):
+                            if not confirmAction(f"Are you sure you want to transfer ${amount:,.2f} [#{accountNumber} - {lookedUpAccount.name}] --> [#{transfereeAccount.accountNumber} - {transfereeAccount.name}] (Y/N)? "):
+                                continue
+                            try:
+                                lookedUpAccount.transfer(transfereeAccount, amount)
                                 saveAccounts(accounts)
-                                print(f"Transferred ${amount:,.2f} [#{accountNumber} - {lookedUpAccount.name}] --> [#{transfereeAccount.accountNumber} - {transfereeAccount.name}]")
-                                input("Press any key to continue...")
-                            else:
-                                input(f"Transfer of ${amount:,.2f} failed. Please check your balance and try again.")
+                                input(f"Transferred ${amount:,.2f} [#{accountNumber} - {lookedUpAccount.name}] --> [#{transfereeAccount.accountNumber} - {transfereeAccount.name}]\nPress any key to continue...")
+                            except ValueError as e:
+                                input(f"[ERROR] Transfer of ${amount:,.2f} failed: {e}. Please check your balance and try again.\nPress any key to continue...")
                     case "4":
                         lookedUpAccountTransactions = lookedUpAccount.transactions
 
@@ -190,7 +189,7 @@ while True:
                                     transactionType = transaction["type"]
                                     date = datetime.fromisoformat(transaction['date'])
                                     formattedDate = f"{date.month}/{date.day}/{date.year} {date.hour}:{date.minute:02d}"
-                                    transactionAmount = f"{float(transaction['amount']):,.2f}"
+                                    transactionAmount = f"{Decimal(transaction["amount"]):,.2f}"
 
                                     if transactionType == "transferSend":
                                         print(f"{i}) [{formattedDate}] - Transfer Send - (${transactionAmount} to #{transaction['to']})")
@@ -213,10 +212,10 @@ while True:
                         print(f"Account #{accountNumber} closing with a balance of ${lookedUpAccount.balance:,.2f} being withdrawn")
                         
                         try:
-                            if lookedUpAccount.withdraw(lookedUpAccount.balance):
-                                saveAccounts(accounts)
-                                print(f"Withdrew ${lookedUpAccount.balance:,.2f} from [Account #{accountNumber} - {lookedUpAccount.name}]")
-                                input("Press any key to continue...")
+                            lookedUpAccount.withdraw(lookedUpAccount.balance)
+                            saveAccounts(accounts)
+                            print(f"Withdrew ${lookedUpAccount.balance:,.2f} from [Account #{accountNumber} - {lookedUpAccount.name}]")
+                            input("Press any key to continue...")
                         except ValueError as e:
                             print(f"[ERROR] {e}")
                             input("Press any key to continue...")
